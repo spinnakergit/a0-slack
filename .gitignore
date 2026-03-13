@@ -1,0 +1,35 @@
+# Runtime configuration (contains real tokens and auth keys)
+config.json
+
+# Runtime data (bridge state, channel IDs)
+data/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment files
+.env
+.env.*
+
+# Credentials and keys
+*.key
+*.pem
+*.cert
+*.p12
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+tests/HUMAN_TEST_RESULTS.md
+tests/SECURITY_ASSESSMENT_RESULTS.md

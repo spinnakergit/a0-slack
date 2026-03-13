@@ -1,0 +1,53 @@
+# Slack Plugin Configuration
+# Tokens can also be set via environment variables:
+#   SLACK_BOT_TOKEN, SLACK_APP_TOKEN, SLACK_USER_TOKEN
+
+bot:
+  token: ""           # xoxb-... Bot User OAuth Token
+  app_token: ""       # xapp-... App-Level Token (for Socket Mode)
+
+user:
+  token: ""           # xoxp-... User OAuth Token (optional)
+
+# Allowed workspace IDs (empty = allow all)
+workspaces: []
+
+defaults:
+  message_limit: 50
+
+memory:
+  auto_save_summaries: true
+  export_format: "markdown"
+
+# Channel polling
+polling:
+  enabled: false
+  interval: 60
+  watch_channels: []
+
+# Chat bridge — Slack as a chat frontend to Agent Zero
+chat_bridge:
+  auto_start: false
+  # Channels are managed via the slack_chat tool, not config
+
+  # User allowlist: only these Slack user IDs can interact with the bot.
+  # Empty list = allow all workspace members. Get IDs from Slack profiles.
+  allowed_users: []
+
+  # Elevated mode: allows authenticated users to access the full Agent Zero
+  # agent loop (with tools, code execution, file access, etc.) via Slack.
+  # Default is restricted mode (conversation only, no tools).
+  allow_elevated: false
+  # Auth key for elevated mode. Auto-generated on first use if left empty.
+  # Shown in WebUI settings. Required to authenticate via !auth <key> in Slack.
+  auth_key: ""
+  # Session timeout in seconds (default: 5 min = 300). Elevated sessions expire
+  # after this duration and must be re-authenticated.
+  session_timeout: 300
+
+# Security — prompt injection defense
+security:
+  max_message_length: 4000
+  max_bulk_input_chars: 200000
+  sanitize_content: true
+  strip_injection_patterns: true
