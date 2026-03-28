@@ -16,7 +16,7 @@
     </div>
 
     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
-        <button data-sl="test-btn" style="background: #4A154B; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Test Connection</button>
+        <button data-sl="test-btn" onclick="window._slMain.testConnection()" style="background: #4A154B; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Test Connection</button>
     </div>
 
     <!-- Chat Bridge Section -->
@@ -26,10 +26,10 @@
             <span data-sl="bridge-status" style="padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 600; background: #f5f5f5; color: #888;">Unknown</span>
         </div>
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px;">
-            <button data-sl="bridge-start" style="background: #43a047; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Start Bridge</button>
-            <button data-sl="bridge-stop" style="background: #e53935; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Stop Bridge</button>
-            <button data-sl="bridge-restart" style="background: #ff9800; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Restart Bridge</button>
-            <button data-sl="bridge-refresh" style="background: var(--bg-secondary, #f0f0f0); color: var(--text-primary, #333); border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Refresh Status</button>
+            <button data-sl="bridge-start" onclick="window._slMain.bridgeAction('start', this)" style="background: #43a047; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Start Bridge</button>
+            <button data-sl="bridge-stop" onclick="window._slMain.bridgeAction('stop', this)" style="background: #e53935; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Stop Bridge</button>
+            <button data-sl="bridge-restart" onclick="window._slMain.bridgeAction('restart', this)" style="background: #ff9800; color: #fff; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Restart Bridge</button>
+            <button data-sl="bridge-refresh" onclick="window._slMain.bridgeAction('status', this)" style="background: var(--bg-secondary, #f0f0f0); color: var(--text-primary, #333); border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 12px;">Refresh Status</button>
         </div>
         <div data-sl="bridge-info" style="font-size: 11px; color: var(--text-secondary, #888);"></div>
     </div>
@@ -37,7 +37,7 @@
 
 <script>
 (function() {
-    const fetchApi = globalThis.fetchApi || fetch;
+    function fetchApi(url, opts) { return (globalThis.fetchApi || fetch)(url, opts); }
     const API_TEST = '/api/plugins/slack/slack_test';
     const API_BRIDGE = '/api/plugins/slack/slack_bridge_api';
 
@@ -118,15 +118,7 @@
         }
     }
 
-    // Bind buttons
-    $('test-btn').addEventListener('click', testConnection);
-    $('bridge-start').addEventListener('click', function() { bridgeAction('start', this); });
-    $('bridge-stop').addEventListener('click', function() { bridgeAction('stop', this); });
-    $('bridge-restart').addEventListener('click', function() { bridgeAction('restart', this); });
-    $('bridge-refresh').addEventListener('click', function() { bridgeAction('status', this); });
-
-    // Auto-check on load
-    testConnection();
-    bridgeAction('status');
+    window._slMain = { testConnection: testConnection, bridgeAction: bridgeAction };
+    setTimeout(function() { testConnection(); bridgeAction('status'); }, 50);
 })();
 </script>

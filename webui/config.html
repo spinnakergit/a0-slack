@@ -1,242 +1,264 @@
-<div class="slack-config" data-sl="config-root" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 16px;">
-    <h3 style="color: #4A154B; margin: 0 0 16px 0;">Slack Settings</h3>
+<html>
+<head><title>Slack</title></head>
+<body>
+    <div x-data="{ activeTab: 'credentials', _workspacesText: '', _allowedUsersText: '', _authKeyStatus: '', _authKeyStatusColor: '' }" x-init="
+        if (!config.bot) config.bot = {};
+        if (!config.bot.token) config.bot.token = '';
+        if (!config.bot.app_token) config.bot.app_token = '';
+        if (!config.user) config.user = {};
+        if (!config.user.token) config.user.token = '';
+        if (!config.workspaces) config.workspaces = [];
+        if (!config.defaults) config.defaults = {};
+        if (!config.defaults.message_limit) config.defaults.message_limit = 50;
+        if (!config.memory) config.memory = {};
+        if (config.memory.auto_save_summaries === undefined) config.memory.auto_save_summaries = true;
+        if (!config.memory.export_format) config.memory.export_format = 'markdown';
+        if (!config.polling) config.polling = {};
+        if (config.polling.enabled === undefined) config.polling.enabled = false;
+        if (!config.polling.interval) config.polling.interval = 60;
+        if (!config.chat_bridge) config.chat_bridge = {};
+        if (config.chat_bridge.auto_start === undefined) config.chat_bridge.auto_start = false;
+        if (!config.chat_bridge.allowed_users) config.chat_bridge.allowed_users = [];
+        if (config.chat_bridge.allow_elevated === undefined) config.chat_bridge.allow_elevated = false;
+        if (!config.chat_bridge.auth_key) config.chat_bridge.auth_key = '';
+        if (!config.chat_bridge.session_timeout) config.chat_bridge.session_timeout = 300;
+        if (!config.security) config.security = {};
+        if (!config.security.max_message_length) config.security.max_message_length = 4000;
+        if (config.security.sanitize_content === undefined) config.security.sanitize_content = true;
+        if (config.security.strip_injection_patterns === undefined) config.security.strip_injection_patterns = true;
+        _workspacesText = (config.workspaces || []).join('\n');
+        _allowedUsersText = (config.chat_bridge.allowed_users || []).join('\n');
+    ">
+        <template x-if="config">
+            <div>
+                <!-- Tab Navigation -->
+                <div style="display: flex; gap: 0; border-bottom: 2px solid var(--border-color, #e0e0e0); margin-bottom: 16px;">
+                    <template x-for="tab in ['credentials', 'settings', 'chat_bridge', 'security']">
+                        <button @click="activeTab = tab"
+                            :style="'padding: 8px 16px; border: none; background: none; cursor: pointer; font-size: 12px; font-weight: 600; margin-bottom: -2px; color: ' + (activeTab === tab ? '#4A154B' : 'var(--text-secondary, #888)') + '; border-bottom: 2px solid ' + (activeTab === tab ? '#4A154B' : 'transparent')"
+                            x-text="tab === 'credentials' ? 'Credentials' : tab === 'settings' ? 'Settings' : tab === 'chat_bridge' ? 'Chat Bridge' : 'Security'"></button>
+                    </template>
+                </div>
 
-    <div style="margin-bottom: 16px; padding: 12px; border: 1px solid var(--border-color, #e0e0e0); border-radius: 6px;">
-        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary, #666); text-transform: uppercase; margin-bottom: 8px;">Bot Account (Primary)</div>
-        <label style="font-size: 12px; font-weight: 500; display: block; margin-bottom: 4px;">Bot Token (xoxb-)</label>
-        <input type="password" data-sl="bot-token" placeholder="xoxb-..." style="width: 100%; padding: 6px 8px; border: 1px solid var(--border-color, #ddd); border-radius: 4px; font-size: 12px; box-sizing: border-box;">
-        <small style="font-size: 10px; color: var(--text-tertiary, #999); margin-top: 2px; display: block;">From api.slack.com/apps. Required for sending messages.</small>
+                <!-- Credentials Tab -->
+                <div x-show="activeTab === 'credentials'">
+                    <div class="section-description">Need help? See the <a href="https://github.com/spinnakergit/a0-slack/blob/main/docs/QUICKSTART.md" target="_blank" style="color: var(--link-color, #4A154B);">Setup Guide</a> for step-by-step instructions.</div>
 
-        <label style="font-size: 12px; font-weight: 500; display: block; margin-bottom: 4px; margin-top: 10px;">App-Level Token (xapp-)</label>
-        <input type="password" data-sl="app-token" placeholder="xapp-..." style="width: 100%; padding: 6px 8px; border: 1px solid var(--border-color, #ddd); border-radius: 4px; font-size: 12px; box-sizing: border-box;">
-        <small style="font-size: 10px; color: var(--text-tertiary, #999); margin-top: 2px; display: block;">Required for Socket Mode (chat bridge). Enable Socket Mode in your Slack app settings.</small>
-    </div>
+                    <div class="section-title">Bot Account (Primary)</div>
 
-    <div style="margin-bottom: 16px; padding: 12px; border: 1px solid var(--border-color, #e0e0e0); border-radius: 6px;">
-        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary, #666); text-transform: uppercase; margin-bottom: 8px;">User Token (Optional)</div>
-        <div style="background: #fff3e0; border: 1px solid #ffcc80; border-radius: 4px; padding: 8px; font-size: 11px; color: #e65100; margin-bottom: 8px;">
-            User tokens enable search functionality. Only install as a user if needed.
-        </div>
-        <label style="font-size: 12px; font-weight: 500; display: block; margin-bottom: 4px;">User Token (xoxp-)</label>
-        <input type="password" data-sl="user-token" placeholder="xoxp-..." style="width: 100%; padding: 6px 8px; border: 1px solid var(--border-color, #ddd); border-radius: 4px; font-size: 12px; box-sizing: border-box;">
-    </div>
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Bot Token</div>
+                            <div class="field-description">From api.slack.com/apps > OAuth & Permissions. Starts with xoxb-</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="password" x-model="config.bot.token" placeholder="xoxb-...">
+                        </div>
+                    </div>
 
-    <div style="margin-bottom: 16px; padding: 12px; border: 1px solid var(--border-color, #e0e0e0); border-radius: 6px;">
-        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary, #666); text-transform: uppercase; margin-bottom: 8px;">Workspaces</div>
-        <label style="font-size: 12px; font-weight: 500; display: block; margin-bottom: 4px;">Allowed Workspace IDs (one per line)</label>
-        <textarea data-sl="workspaces-list" rows="3" placeholder="Leave empty for all workspaces" style="width: 100%; padding: 6px 8px; border: 1px solid var(--border-color, #ddd); border-radius: 4px; font-size: 12px; box-sizing: border-box; resize: vertical;"></textarea>
-    </div>
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">App-Level Token</div>
+                            <div class="field-description">Required for Socket Mode (chat bridge). Enable Socket Mode in app settings. Starts with xapp-</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="password" x-model="config.bot.app_token" placeholder="xapp-...">
+                        </div>
+                    </div>
 
-    <div style="margin-bottom: 16px; padding: 12px; border: 1px solid var(--border-color, #e0e0e0); border-radius: 6px;">
-        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary, #666); text-transform: uppercase; margin-bottom: 8px;">Memory</div>
-        <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-            <input type="checkbox" data-sl="auto-summaries" checked> Auto-save summaries to memory
-        </label>
-    </div>
+                    <div class="section-title">User Token (Optional)</div>
+                    <div class="section-description" style="color: #e65100;">User tokens enable search functionality. Only install as a user if needed.</div>
 
-    <div style="margin-bottom: 16px; padding: 12px; border: 1px solid var(--border-color, #e0e0e0); border-radius: 6px;">
-        <div style="font-size: 12px; font-weight: 600; color: var(--text-secondary, #666); text-transform: uppercase; margin-bottom: 8px;">Chat Bridge</div>
-        <div style="font-size: 11px; color: var(--text-secondary, #888); margin-bottom: 8px;">
-            Route Slack messages through Agent Zero's LLM via Socket Mode. Requires bot token + app token. Channels are managed via the <code>slack_chat</code> tool.
-        </div>
-        <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; margin-bottom: 8px;">
-            <input type="checkbox" data-sl="bridge-autostart"> Auto-start chat bridge on agent startup
-        </label>
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">User Token</div>
+                            <div class="field-description">Optional. Starts with xoxp-</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="password" x-model="config.user.token" placeholder="xoxp-...">
+                        </div>
+                    </div>
+                </div>
 
-        <div style="border-top: 1px solid var(--border-color, #e0e0e0); padding-top: 10px; margin-top: 4px;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary, #666); margin-bottom: 6px;">User Allowlist</div>
-            <div style="font-size: 10px; color: var(--text-secondary, #888); margin-bottom: 6px;">
-                Only these Slack users can interact with the bot. Leave empty to allow all workspace members.
-            </div>
-            <textarea data-sl="allowed-users" rows="3" placeholder="Enter Slack user IDs, one per line (e.g., U01ABC23DEF)" style="width: 100%; padding: 6px 8px; border: 1px solid var(--border-color, #ddd); border-radius: 4px; font-size: 11px; font-family: monospace; box-sizing: border-box; resize: vertical;"></textarea>
-        </div>
+                <!-- Settings Tab -->
+                <div x-show="activeTab === 'settings'">
+                    <div class="section-title">Workspaces</div>
 
-        <div style="border-top: 1px solid var(--border-color, #e0e0e0); padding-top: 10px; margin-top: 10px;">
-            <div style="font-size: 11px; font-weight: 600; color: var(--text-secondary, #666); margin-bottom: 6px;">Elevated Mode (2FA)</div>
-            <div style="font-size: 10px; color: var(--text-secondary, #888); margin-bottom: 8px;">
-                When enabled, authenticated users can unlock full Agent Zero access from Slack using <code>!auth &lt;key&gt;</code>.
-                Default mode is restricted (chat only, no tools).
-            </div>
-            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; margin-bottom: 8px;">
-                <input type="checkbox" data-sl="allow-elevated"> Allow elevated mode
-            </label>
-            <div data-sl="elevated-warning" style="display: none; background: #fce4ec; border: 1px solid #ef9a9a; border-radius: 4px; padding: 10px; margin-bottom: 10px;">
-                <div style="font-size: 11px; font-weight: 700; color: #c62828; margin-bottom: 4px;">SECURITY NOTICE</div>
-                <div style="font-size: 11px; color: #b71c1c; line-height: 1.5;">
-                    Elevated mode grants Slack users <strong>full access</strong> to Agent Zero's capabilities, including code execution, file operations, and system tools.
-                    <br><br>
-                    <strong>Recommended:</strong> A private workspace with only trusted members, a defined User Allowlist above, and short session timeouts.
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Allowed Workspace IDs</div>
+                            <div class="field-description">One per line. Leave empty to allow all workspaces.</div>
+                        </div>
+                        <div class="field-control">
+                            <textarea rows="3" x-model="_workspacesText" @input="config.workspaces = _workspacesText.split('\n').map(s => s.trim()).filter(Boolean)" placeholder="Leave empty for all workspaces" style="resize: vertical;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Defaults</div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Message Limit</div>
+                            <div class="field-description">Maximum messages per channel read (1-200).</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="number" min="1" max="200" x-model.number="config.defaults.message_limit">
+                        </div>
+                    </div>
+
+                    <div class="section-title">Memory</div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Auto-save summaries</div>
+                            <div class="field-description">Automatically save conversation summaries to agent memory.</div>
+                        </div>
+                        <div class="field-control">
+                            <label class="toggle"><input type="checkbox" x-model="config.memory.auto_save_summaries"><span class="toggler"></span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Bridge Tab -->
+                <div x-show="activeTab === 'chat_bridge'">
+                    <div class="section-title">Chat Bridge</div>
+                    <div class="section-description">Route Slack messages through Agent Zero's LLM via Socket Mode. Requires bot token + app token. Channels are managed via the slack_chat tool.</div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Auto-start</div>
+                            <div class="field-description">Start chat bridge automatically on agent startup.</div>
+                        </div>
+                        <div class="field-control">
+                            <label class="toggle"><input type="checkbox" x-model="config.chat_bridge.auto_start"><span class="toggler"></span></label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">User Allowlist</div>
+                            <div class="field-description">Only these Slack user IDs can interact with the bot. One per line. Leave empty to allow all workspace members.</div>
+                        </div>
+                        <div class="field-control">
+                            <textarea rows="3" x-model="_allowedUsersText" @input="config.chat_bridge.allowed_users = _allowedUsersText.split('\n').map(s => s.trim()).filter(Boolean)" placeholder="Enter Slack user IDs, one per line (e.g., U01ABC23DEF)" style="resize: vertical; font-family: monospace; font-size: 11px;"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Elevated Mode (2FA)</div>
+                    <div class="section-description">When enabled, authenticated users can unlock full Agent Zero access from Slack using <code>!auth &lt;key&gt;</code>. Default mode is restricted (chat only, no tools).</div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Allow elevated mode</div>
+                        </div>
+                        <div class="field-control">
+                            <label class="toggle"><input type="checkbox" x-model="config.chat_bridge.allow_elevated"><span class="toggler"></span></label>
+                        </div>
+                    </div>
+
+                    <div x-show="config.chat_bridge.allow_elevated" style="padding: 10px; background: #fce4ec; border: 1px solid #ef9a9a; border-radius: 6px; margin-bottom: 12px;">
+                        <div style="font-size: 11px; font-weight: 700; color: #c62828; margin-bottom: 4px;">SECURITY NOTICE</div>
+                        <div style="font-size: 11px; color: #b71c1c; line-height: 1.5;">
+                            Elevated mode grants Slack users <strong>full access</strong> to Agent Zero's capabilities, including code execution, file operations, and system tools.
+                            <br><br>
+                            <strong>Recommended:</strong> A private workspace with only trusted members, a defined User Allowlist above, and short session timeouts.
+                        </div>
+                    </div>
+
+                    <div x-show="config.chat_bridge.allow_elevated">
+                        <div class="field">
+                            <div class="field-label">
+                                <div class="field-title">Auth Key</div>
+                                <div class="field-description">Share this key securely. Users type <code>!auth &lt;key&gt;</code> in Slack to elevate.</div>
+                            </div>
+                            <div class="field-control" style="display: flex; gap: 6px; align-items: center;">
+                                <input type="text" x-model="config.chat_bridge.auth_key" readonly style="flex: 1; font-family: monospace; font-size: 11px; background: var(--bg-secondary, #f5f5f5);">
+                                <button class="btn btn-field" @click="
+                                    _authKeyStatus = 'Generating...'; _authKeyStatusColor = '#e65100';
+                                    (globalThis.fetchApi || fetch)('/api/plugins/slack/slack_config_api', {
+                                        method: 'POST',
+                                        headers: {'Content-Type': 'application/json'},
+                                        body: JSON.stringify({action: 'generate_auth_key'})
+                                    }).then(r => r.json()).then(d => {
+                                        if (d.auth_key) {
+                                            config.chat_bridge.auth_key = d.auth_key;
+                                            _authKeyStatus = 'Generated!'; _authKeyStatusColor = '#2e7d32';
+                                        } else { _authKeyStatus = d.error || 'Failed'; _authKeyStatusColor = '#c62828'; }
+                                        setTimeout(() => _authKeyStatus = '', 3000);
+                                    }).catch(() => { _authKeyStatus = 'Error'; _authKeyStatusColor = '#c62828'; });
+                                ">Regenerate</button>
+                                <button class="btn btn-field" @click="
+                                    if (config.chat_bridge.auth_key) {
+                                        navigator.clipboard.writeText(config.chat_bridge.auth_key).then(() => {
+                                            _authKeyStatus = 'Copied!'; _authKeyStatusColor = '#2e7d32';
+                                            setTimeout(() => _authKeyStatus = '', 2000);
+                                        });
+                                    }
+                                ">Copy</button>
+                            </div>
+                            <span :style="'font-size: 11px; margin-top: 4px; color: ' + _authKeyStatusColor" x-text="_authKeyStatus"></span>
+                        </div>
+
+                        <div class="field">
+                            <div class="field-label">
+                                <div class="field-title">Session Timeout</div>
+                                <div class="field-description">Elevated sessions expire after this duration.</div>
+                            </div>
+                            <div class="field-control">
+                                <select x-model.number="config.chat_bridge.session_timeout">
+                                    <option value="300">5 minutes</option>
+                                    <option value="900">15 minutes</option>
+                                    <option value="1800">30 minutes</option>
+                                    <option value="3600">1 hour</option>
+                                    <option value="7200">2 hours</option>
+                                    <option value="14400">4 hours</option>
+                                    <option value="0">Never expire</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div x-show="config.chat_bridge.session_timeout == 0" style="padding: 8px; background: #fff3e0; border: 1px solid #ffcc80; border-radius: 4px; font-size: 11px; color: #e65100;">
+                            <strong>Security warning:</strong> "Never expire" means an elevated session stays active until the bot restarts or the user runs <code>!deauth</code>.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Tab -->
+                <div x-show="activeTab === 'security'">
+                    <div class="section-title">Security Settings</div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Sanitize content</div>
+                            <div class="field-description">Strip zero-width chars and normalize Unicode in messages.</div>
+                        </div>
+                        <div class="field-control">
+                            <label class="toggle"><input type="checkbox" x-model="config.security.sanitize_content"><span class="toggler"></span></label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Strip injection patterns</div>
+                            <div class="field-description">Remove common prompt injection patterns from incoming messages.</div>
+                        </div>
+                        <div class="field-control">
+                            <label class="toggle"><input type="checkbox" x-model="config.security.strip_injection_patterns"><span class="toggler"></span></label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-label">
+                            <div class="field-title">Max Message Length</div>
+                            <div class="field-description">Maximum characters per message (1-40000).</div>
+                        </div>
+                        <div class="field-control">
+                            <input type="number" min="1" max="40000" x-model.number="config.security.max_message_length">
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div data-sl="elevated-settings" style="display: none; margin-top: 8px;">
-                <label style="font-size: 12px; font-weight: 500; display: block; margin-bottom: 4px;">Auth Key</label>
-                <div style="display: flex; gap: 6px; align-items: center;">
-                    <input type="text" data-sl="auth-key" readonly style="flex: 1; padding: 6px 8px; border: 1px solid var(--border-color, #ddd); border-radius: 4px; font-size: 11px; font-family: monospace; background: var(--bg-secondary, #f5f5f5); box-sizing: border-box;">
-                    <button data-sl="regen-key-btn" style="background: #4A154B; color: #fff; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; white-space: nowrap;">Regenerate</button>
-                    <button data-sl="copy-key-btn" style="background: var(--bg-secondary, #e0e0e0); color: var(--text-primary, #333); border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 11px; white-space: nowrap;">Copy</button>
-                </div>
-                <small style="font-size: 10px; color: var(--text-tertiary, #999); margin-top: 4px; display: block;">
-                    Share this key securely. Users type <code>!auth &lt;key&gt;</code> in Slack to elevate.
-                </small>
-                <label style="font-size: 12px; font-weight: 500; display: block; margin-top: 10px; margin-bottom: 4px;">Session Timeout</label>
-                <select data-sl="session-timeout" style="padding: 6px 8px; border: 1px solid var(--border-color, #ddd); border-radius: 4px; font-size: 12px;">
-                    <option value="300">5 minutes</option>
-                    <option value="900">15 minutes</option>
-                    <option value="1800">30 minutes</option>
-                    <option value="3600">1 hour</option>
-                    <option value="7200">2 hours</option>
-                    <option value="14400">4 hours</option>
-                    <option value="0">Never expire</option>
-                </select>
-                <div data-sl="never-expire-warning" style="display: none; background: #fff3e0; border: 1px solid #ffcc80; border-radius: 4px; padding: 6px 8px; font-size: 10px; color: #e65100; margin-top: 6px;">
-                    <strong>Security warning:</strong> "Never expire" means an elevated session stays active until the bot restarts or the user runs <code>!deauth</code>.
-                </div>
-            </div>
-        </div>
+        </template>
     </div>
-
-    <button data-sl="save-btn" style="background: #4A154B; color: #fff; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 600;">Save Slack Settings</button>
-    <span data-sl="save-status" style="margin-left: 10px; font-size: 12px;"></span>
-    <small style="font-size: 10px; color: var(--text-tertiary, #999); margin-top: 8px; display: block;">Use this button (not the outer framework Save) to save Slack settings. Tokens are stored securely with masking.</small>
-</div>
-
-<script>
-(function() {
-    const fetchApi = globalThis.fetchApi || fetch;
-
-    const root = document.querySelector('[data-sl="config-root"]') ||
-                 document.querySelector('.slack-config') ||
-                 document.currentScript?.parentElement;
-
-    if (!root) { console.error('[Slack Config] Cannot find config root element'); return; }
-
-    function el(key) {
-        return root.querySelector('[data-sl="' + key + '"]');
-    }
-
-    async function loadConfig() {
-        try {
-            const resp = await fetchApi('/api/plugins/slack/slack_config_api', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({action: 'get'})
-            });
-            const c = await resp.json();
-            console.log('[Slack Config] Loaded:', JSON.stringify(c));
-
-            if (c.bot?.token) el('bot-token').value = c.bot.token;
-            if (c.bot?.app_token) el('app-token').value = c.bot.app_token;
-            if (c.user?.token) el('user-token').value = c.user.token;
-            if (c.workspaces?.length) el('workspaces-list').value = c.workspaces.join('\n');
-            if (c.memory) {
-                el('auto-summaries').checked = c.memory.auto_save_summaries !== false;
-            }
-            if (c.chat_bridge) {
-                el('bridge-autostart').checked = c.chat_bridge.auto_start === true;
-                if (c.chat_bridge.allowed_users?.length) el('allowed-users').value = c.chat_bridge.allowed_users.join('\n');
-                el('allow-elevated').checked = c.chat_bridge.allow_elevated === true;
-                if (c.chat_bridge.auth_key) el('auth-key').value = c.chat_bridge.auth_key;
-                const timeoutSec = c.chat_bridge.session_timeout;
-                if (timeoutSec !== undefined) el('session-timeout').value = String(timeoutSec);
-                toggleElevatedSettings();
-                toggleNeverExpireWarning();
-            }
-        } catch (e) {
-            console.error('[Slack Config] Load error:', e);
-        }
-    }
-
-    function toggleElevatedSettings() {
-        const show = el('allow-elevated')?.checked;
-        const settings = el('elevated-settings');
-        const warning = el('elevated-warning');
-        if (settings) settings.style.display = show ? 'block' : 'none';
-        if (warning) warning.style.display = show ? 'block' : 'none';
-    }
-
-    function toggleNeverExpireWarning() {
-        const val = el('session-timeout')?.value;
-        const warning = el('never-expire-warning');
-        if (warning) warning.style.display = val === '0' ? 'block' : 'none';
-    }
-
-    async function saveConfig() {
-        const status = el('save-status');
-        const config = {
-            action: 'set',
-            bot: {
-                token: el('bot-token')?.value || '',
-                app_token: el('app-token')?.value || '',
-            },
-            user: { token: el('user-token')?.value || '' },
-            workspaces: (el('workspaces-list')?.value || '').split('\n').map(s => s.trim()).filter(Boolean),
-            defaults: { message_limit: 50 },
-            memory: {
-                auto_save_summaries: el('auto-summaries')?.checked ?? true,
-                export_format: "markdown"
-            },
-            chat_bridge: {
-                auto_start: el('bridge-autostart')?.checked ?? false,
-                allowed_users: (el('allowed-users')?.value || '').split('\n').map(s => s.trim()).filter(Boolean),
-                allow_elevated: el('allow-elevated')?.checked ?? false,
-                auth_key: el('auth-key')?.value || '',
-                session_timeout: parseInt(el('session-timeout')?.value) || 300
-            }
-        };
-
-        console.log('[Slack Config] Saving...');
-
-        try {
-            const resp = await fetchApi('/api/plugins/slack/slack_config_api', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(config)
-            });
-            const result = await resp.json();
-
-            if (result.ok) {
-                status.style.color = '#2e7d32';
-                status.textContent = 'Saved!';
-            } else {
-                status.style.color = '#c62828';
-                status.textContent = 'Error: ' + (result.error || 'Unknown');
-            }
-            setTimeout(() => { status.textContent = ''; }, 5000);
-        } catch (e) {
-            status.style.color = '#c62828';
-            status.textContent = 'Network error: ' + e.message;
-        }
-    }
-
-    // Bind events
-    el('save-btn')?.addEventListener('click', saveConfig);
-    el('allow-elevated')?.addEventListener('change', toggleElevatedSettings);
-    el('session-timeout')?.addEventListener('change', toggleNeverExpireWarning);
-
-    el('regen-key-btn')?.addEventListener('click', async function() {
-        try {
-            const resp = await fetchApi('/api/plugins/slack/slack_config_api', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({action: 'generate_auth_key'})
-            });
-            const result = await resp.json();
-            if (result.auth_key) el('auth-key').value = result.auth_key;
-        } catch (e) {
-            console.error('[Slack Config] Key generation error:', e);
-        }
-    });
-
-    el('copy-key-btn')?.addEventListener('click', function() {
-        const key = el('auth-key')?.value;
-        if (key) {
-            navigator.clipboard.writeText(key).then(() => {
-                el('copy-key-btn').textContent = 'Copied!';
-                setTimeout(() => { el('copy-key-btn').textContent = 'Copy'; }, 2000);
-            });
-        }
-    });
-
-    loadConfig();
-})();
-</script>
+</body>
+</html>
