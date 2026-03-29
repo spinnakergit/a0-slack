@@ -609,10 +609,20 @@ class ChatBridgeBot:
 
     async def start(self):
         """Start the Socket Mode connection."""
-        from slack_sdk.web.async_client import AsyncWebClient
-        from slack_sdk.socket_mode.aiohttp import SocketModeClient
-        from slack_sdk.socket_mode.request import SocketModeRequest
-        from slack_sdk.socket_mode.response import SocketModeResponse
+        try:
+            from slack_sdk.web.async_client import AsyncWebClient
+            from slack_sdk.socket_mode.aiohttp import SocketModeClient
+            from slack_sdk.socket_mode.request import SocketModeRequest
+            from slack_sdk.socket_mode.response import SocketModeResponse
+        except ModuleNotFoundError:
+            logger.warning("slack-sdk not found, installing...")
+            import subprocess, sys
+            python = "/opt/venv-a0/bin/python3" if os.path.isfile("/opt/venv-a0/bin/python3") else sys.executable
+            subprocess.check_call([python, "-m", "pip", "install", "slack-sdk>=3.0,<4"], capture_output=True)
+            from slack_sdk.web.async_client import AsyncWebClient
+            from slack_sdk.socket_mode.aiohttp import SocketModeClient
+            from slack_sdk.socket_mode.request import SocketModeRequest
+            from slack_sdk.socket_mode.response import SocketModeResponse
 
         self._web_client = AsyncWebClient(token=self.bot_token)
 
