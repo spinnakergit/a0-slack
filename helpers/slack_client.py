@@ -19,7 +19,7 @@ except ModuleNotFoundError:
     logger.warning("slack-sdk not found, installing...")
     import subprocess, sys
     python = "/opt/venv-a0/bin/python3" if os.path.isfile("/opt/venv-a0/bin/python3") else sys.executable
-    subprocess.check_call([python, "-m", "pip", "install", "slack-sdk>=3.0,<4"], capture_output=True)
+    subprocess.run([python, "-m", "pip", "install", "slack-sdk>=3.0,<4"], capture_output=True, check=True)
     from slack_sdk.web.async_client import AsyncWebClient
     from slack_sdk.errors import SlackApiError
 
