@@ -1,9 +1,9 @@
 from helpers.tool import Tool, Response
-from plugins.slack.helpers.slack_client import (
+from usr.plugins.slack.helpers.slack_client import (
     SlackClient, SlackAPIError, format_messages, get_slack_config,
     get_modes_to_try,
 )
-from plugins.slack.helpers.sanitize import require_auth, sanitize_channel_name, validate_slack_id
+from usr.plugins.slack.helpers.sanitize import require_auth, sanitize_channel_name, validate_slack_id
 from slack_sdk.errors import SlackApiError
 
 

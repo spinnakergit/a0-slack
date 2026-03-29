@@ -1,10 +1,10 @@
 import time
 from pathlib import Path
 from helpers.tool import Tool, Response
-from plugins.slack.helpers.slack_client import (
+from usr.plugins.slack.helpers.slack_client import (
     SlackClient, format_messages, get_slack_config, get_modes_to_try,
 )
-from plugins.slack.helpers.sanitize import require_auth, truncate_bulk, clamp_limit, validate_slack_id
+from usr.plugins.slack.helpers.sanitize import require_auth, truncate_bulk, clamp_limit, validate_slack_id
 from slack_sdk.errors import SlackApiError
 
 SUMMARIZE_PROMPT = """You are summarizing a Slack conversation. Analyze the following messages and produce a structured summary.

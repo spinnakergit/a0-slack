@@ -1,6 +1,6 @@
 from helpers.tool import Tool, Response
-from plugins.slack.helpers.slack_client import get_slack_config
-from plugins.slack.helpers.slack_bot import (
+from usr.plugins.slack.helpers.slack_client import get_slack_config
+from usr.plugins.slack.helpers.slack_bot import (
     start_chat_bridge,
     stop_chat_bridge,
     get_bot_status,
@@ -8,7 +8,7 @@ from plugins.slack.helpers.slack_bot import (
     remove_chat_channel,
     get_chat_channels,
 )
-from plugins.slack.helpers.sanitize import require_auth, validate_slack_id
+from usr.plugins.slack.helpers.sanitize import require_auth, validate_slack_id
 
 
 class SlackChat(Tool):

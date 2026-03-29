@@ -43,7 +43,7 @@ class SlackConfigApi(ApiHandler):
     def _generate_auth_key(self) -> dict:
         """Generate a new auth key (does not save — user must click Save)."""
         try:
-            from plugins.slack.helpers.sanitize import generate_auth_key
+            from usr.plugins.slack.helpers.sanitize import generate_auth_key
             return {"auth_key": generate_auth_key()}
         except Exception:
             return {"error": "Failed to generate auth key."}
@@ -135,7 +135,7 @@ class SlackConfigApi(ApiHandler):
                 ))
                 new_bridge["allowed_users"] = merged_users
 
-            from plugins.slack.helpers.sanitize import secure_write_json
+            from usr.plugins.slack.helpers.sanitize import secure_write_json
             secure_write_json(config_path, config)
 
             return {"ok": True}

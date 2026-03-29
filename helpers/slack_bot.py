@@ -59,7 +59,7 @@ def load_chat_state() -> dict:
 
 
 def save_chat_state(state: dict):
-    from plugins.slack.helpers.sanitize import secure_write_json
+    from usr.plugins.slack.helpers.sanitize import secure_write_json
     secure_write_json(_get_state_path(), state)
 
 
@@ -152,7 +152,7 @@ class ChatBridgeBot:
     def _get_config(self) -> dict:
         """Load the Slack plugin configuration."""
         try:
-            from plugins.slack.helpers.slack_client import get_slack_config
+            from usr.plugins.slack.helpers.slack_client import get_slack_config
             return get_slack_config()
         except Exception:
             return {}
@@ -186,12 +186,12 @@ class ChatBridgeBot:
         bridge_config = config.get("chat_bridge", {})
         auth_key = bridge_config.get("auth_key", "")
         if not auth_key and bridge_config.get("allow_elevated", False):
-            from plugins.slack.helpers.sanitize import generate_auth_key
+            from usr.plugins.slack.helpers.sanitize import generate_auth_key
             auth_key = generate_auth_key()
             bridge_config["auth_key"] = auth_key
             config["chat_bridge"] = bridge_config
             try:
-                from plugins.slack.helpers.sanitize import secure_write_json
+                from usr.plugins.slack.helpers.sanitize import secure_write_json
                 config_candidates = [
                     Path("/a0/usr/plugins/slack/config.json"),
                     Path("/a0/plugins/slack/config.json"),
@@ -447,7 +447,7 @@ class ChatBridgeBot:
 
             agent = context.agent0
 
-            from plugins.slack.helpers.sanitize import sanitize_content, sanitize_username
+            from usr.plugins.slack.helpers.sanitize import sanitize_content, sanitize_username
             safe_text = sanitize_content(text)
 
             # Get username
@@ -512,7 +512,7 @@ class ChatBridgeBot:
                 set_context_id(channel_id, context.id)
                 logger.info(f"Created new elevated context {context.id} for channel {channel_id}")
 
-            from plugins.slack.helpers.sanitize import sanitize_content, sanitize_username
+            from usr.plugins.slack.helpers.sanitize import sanitize_content, sanitize_username
             safe_text = sanitize_content(text)
 
             author_name = user_id

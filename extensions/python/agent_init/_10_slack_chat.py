@@ -31,7 +31,7 @@ async def execute(agent, **kwargs):
         if not bridge_config.get("auto_start", False):
             return  # Auto-start disabled
 
-        from plugins.slack.helpers.slack_bot import get_chat_channels, start_chat_bridge
+        from usr.plugins.slack.helpers.slack_bot import get_chat_channels, start_chat_bridge
 
         channels = get_chat_channels()
         if not channels:

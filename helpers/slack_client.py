@@ -340,7 +340,7 @@ def format_messages(messages: list, include_ids: bool = False, user_cache: dict 
     All external content (usernames, message text) is
     sanitized to neutralise prompt injection attempts.
     """
-    from plugins.slack.helpers.sanitize import (
+    from usr.plugins.slack.helpers.sanitize import (
         sanitize_content, sanitize_username,
     )
 
@@ -376,7 +376,7 @@ def format_messages(messages: list, include_ids: bool = False, user_cache: dict 
         files = msg.get("files", [])
         file_text = ""
         if files:
-            from plugins.slack.helpers.sanitize import sanitize_filename
+            from usr.plugins.slack.helpers.sanitize import sanitize_filename
             names = [sanitize_filename(f.get("name", "file")) for f in files]
             file_text = f" [Files: {', '.join(names)}]"
 
